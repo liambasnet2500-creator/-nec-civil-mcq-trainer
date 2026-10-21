@@ -2,7 +2,7 @@
 
 A free, mobile-friendly, open-source practice app for Nepal Engineering Council (NEC) Civil Engineering Licence Exam preparation.
 
-**[Open the MCQ Trainer](https://liambasnet2500-creator.github.io/-nec-civil-mcq-trainer/)**
+**[Open the MCQ Trainer](https://liambasnet2500-creator.github.io/nec-civil-mcq-trainer/)**
 
 > **Independent educational project.** Not affiliated with or endorsed by the Nepal Engineering Council. Verify code references, exam patterns, and answer keys against current official sources.
 
@@ -17,7 +17,7 @@ A free, mobile-friendly, open-source practice app for Nepal Engineering Council 
 
 ## Start
 
-Visit the **[hosted trainer](https://liambasnet2500-creator.github.io/-nec-civil-mcq-trainer/)**, or download `index.html` and open it in a modern browser.
+Visit the **[hosted trainer](https://liambasnet2500-creator.github.io/nec-civil-mcq-trainer/)**, or download `index.html` and open it in a modern browser.
 
 This is the existing trainer imported from the private development workspace, **not a newly generated quiz**. The original project documentation described it as prepared for the 14th examination; users studying for later sittings should check that the questions, codes, and regulations remain current.
 
