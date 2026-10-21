@@ -19,7 +19,7 @@ A free, mobile-friendly, open-source practice app for Nepal Engineering Council 
 
 Visit the **[hosted trainer](https://liambasnet2500-creator.github.io/nec-civil-mcq-trainer/)**, or download `index.html` and open it in a modern browser.
 
-This is the existing trainer imported from the private development workspace, **not a newly generated quiz**. The original project documentation described it as prepared for the 14th examination; users studying for later sittings should check that the questions, codes, and regulations remain current.
+This is the existing trainer imported from the private development workspace, **not a newly generated quiz**. The original project was prepared for an earlier examination; students should check that the questions, codes, and regulations remain current.
 
 ## Repository layout
 
