@@ -107,8 +107,7 @@ p { margin: 0; }
 .card { background: var(--sheet); border: 1px solid var(--line); border-radius: 14px; padding: 16px; box-shadow: var(--shadow); }
 .hero { display: grid; gap: 10px; padding-block: 8px 4px; }
 .hero h1 span { color: var(--crimson); }
-.countdown { display: flex; align-items: baseline; gap: 4px 12px; flex-wrap: wrap; }
-.countdown .big { font-family: var(--f-display); font-weight: 700; font-size: 2.4rem; line-height: 1; color: var(--crimson); }
+.exam-scope { color: var(--muted); font-size: 0.97rem; line-height: 1.5; max-width: 58ch; }
 .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 .kpi { background: var(--sheet); border: 1px solid var(--line); border-radius: 12px; padding: 10px; min-width: 0; }
 .kpi b { display: block; font-family: var(--f-display); font-size: 1.6rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
@@ -359,7 +358,6 @@ for (const q of BANK) { (SUBS_OF[q.ch] = SUBS_OF[q.ch] || []); if (!SUBS_OF[q.ch
 const SUB_INDEX = {}; CHS.forEach(c => SUBS_OF[c].forEach((s, i) => { SUB_INDEX[s] = i; }));
 const RECURRING_IN_CONCEPT = new Map();
 for (const q of BANK) if (q.r >= 1) RECURRING_IN_CONCEPT.set(q.conceptId, (RECURRING_IN_CONCEPT.get(q.conceptId) || 0) + 1);
-const EXAM_DAY = new Date(2026, 9, 12); // Ashwin 26, 2083 (Mon 12 Oct 2026), per the PDF cover
 const MOCK_MS = 120 * 60 * 1000, PACE_S = 72, SPACING = 15, SESSION_GAP = 20 * 60 * 1000;
 
 /* --------------------------------------------------------------- storage */
@@ -709,7 +707,6 @@ function render() {
 }
 
 /* ----------------------------------------------------------------- home */
-function daysLeft() { const t = new Date(); t.setHours(0, 0, 0, 0); return Math.round((EXAM_DAY - t) / 86400000); }
 const EXAM_RULES = `<ol class="rules">
   <li>100 MCQs in 2 hours (72 s each), pass mark 50, no negative marking: never leave a blank.</li>
   <li>Nepal value beats Indian value (NBC, NRS, NDWQS over IS) when the stem is about Nepal.</li>
@@ -722,23 +719,19 @@ function ensureDaily() {
 }
 function todayCard() {
   ensureDaily();
-  const d = daysLeft(); if (d < 0) return '';
-  if (d === 0) return `<div class="card stack"><p class="eyebrow">Exam day</p><h3>Rules from the PDF</h3>${EXAM_RULES}</div>`;
-  const st = stats(); const start = startOfToday();
+  const st = stats();
+  const start = startOfToday();
   const newToday = Object.values(S.q).filter(r => r.n && (r.fa || 0) >= start).length;
-  const target = Math.ceil(S.daily.unseenStart / Math.max(1, d));
   const lastMock = S.history.length ? S.history[S.history.length - 1] : null;
-  const sinceMock = lastMock ? (Date.now() - lastMock.date) / 86400000 : 99;
-  let mock;
-  if (d <= 1) mock = { text: 'Final check: HIGH 100, the top-ranked questions in exam format.', act: 'setup', mode: 'high', label: 'HIGH 100' };
-  else if (sinceMock >= 2) mock = { text: lastMock ? `Last mock ${Math.floor(sinceMock)} days ago. Take a Full Mock today (2 hours).` : 'Take your first Full Mock (2 hours) to see where you stand.', act: 'setup', mode: 'mock', label: 'Full Mock' };
-  else mock = { text: `Next Full Mock: ${new Date(lastMock.date + 2 * 86400000).toLocaleDateString(undefined, { weekday: 'long' })}. Keep HIGH 100 for the last day.`, act: '', label: '' };
-  const lastDay = d <= 1 ? `<div class="today-row"><div><b>Last-day revision</b><br><span class="small muted">The 50 most-repeated questions (R5+), your mistakes and your stars, in the Study book.</span></div><button class="btn small" data-act="study-last">Open</button></div>` : '';
-  return `<div class="card today"><p class="eyebrow">Today · ${d} day${d === 1 ? '' : 's'} left</p>
-    ${st.due ? `<div class="today-row"><div><b>${st.due} due mistake${st.due === 1 ? '' : 's'}</b><br><span class="small muted">Clear these first.</span></div><button class="btn small primary" data-act="start-mistakes">Practise</button></div>` : ''}
-    <div class="today-row"><div><b>New questions: ${newToday}/${target}${target && newToday >= target ? ' ✓' : ''}</b><br><span class="small muted">${!S.daily.unseenStart ? `All ${TOTAL} seen. Keep working on mistakes and mocks.` : !st.unseen ? `All ${TOTAL} seen now. Keep working on mistakes and mocks.` : newToday >= target ? `Today's target is done; ${st.unseen} unseen left. More is a bonus.` : `${st.unseen} unseen left; about ${target} a day covers all ${TOTAL} before the exam.`}</span></div><button class="btn small ${st.due ? '' : 'primary'}" data-act="start-all">${newToday >= target && target ? 'More' : 'Start'}</button></div>
-    <div class="today-row"><div><b>Mock</b><br><span class="small muted">${esc(mock.text)}</span></div>${mock.act ? `<button class="btn small" data-act="${mock.act}" data-mode="${mock.mode}">${mock.label}</button>` : '<span></span>'}</div>
-    ${lastDay}
+  const sinceMock = lastMock ? (Date.now() - lastMock.date) / 86400000 : Infinity;
+  const mockText = sinceMock >= 2
+    ? (lastMock ? `Your last mock was ${Math.floor(sinceMock)} day(s) ago. Try another Full Mock to check your progress.` : 'Try a Full Mock to check your exam readiness.')
+    : 'Keep practising and reviewing mistakes between mock exams.';
+  return `<div class="card today"><p class="eyebrow">Today's study focus · Any exam session</p>
+    ${st.due ? `<div class="today-row"><div><b>${st.due} due mistake${st.due === 1 ? '' : 's'}</b><br><span class="small muted">Review these first.</span></div><button class="btn small primary" data-act="start-mistakes">Practise</button></div>` : ''}
+    <div class="today-row"><div><b>${newToday} new question${newToday === 1 ? '' : 's'} attempted today</b><br><span class="small muted">${st.unseen ? `${st.unseen} unseen questions remain. Study at your own pace.` : `All ${TOTAL} questions seen. Keep reviewing mistakes and taking mocks.`}</span></div><button class="btn small ${st.due ? '' : 'primary'}" data-act="start-all">Practise</button></div>
+    <div class="today-row"><div><b>Full Mock</b><br><span class="small muted">${esc(mockText)}</span></div><button class="btn small" data-act="setup" data-mode="mock">Start</button></div>
+    <div class="today-row"><div><b>High-yield revision</b><br><span class="small muted">Revise frequently repeated questions, mistakes and starred questions whenever you need.</span></div><button class="btn small" data-act="study-last">Open</button></div>
   </div>`;
 }
 function activeLabel(a) {
@@ -748,7 +741,7 @@ function activeLabel(a) {
   return `${a.label}: question ${Math.min(a.idx + 1, a.ids.length)} of ${a.ids.length}`;
 }
 VIEWS.home = function () {
-  const st = stats(); const d = daysLeft(); const a = S.active;
+  const st = stats(); const a = S.active;
   setTop(`<div class="title">NEC Civil <span style="color:var(--crimson)">MCQ</span></div><div class="spacer"></div><button class="iconbtn" data-act="status">Status</button><button class="iconbtn" data-act="settings">Data</button>`);
   setBottom('');
   const dueN = st.due, highN = BANK.filter(q => q.r >= 3).length;
@@ -756,7 +749,7 @@ VIEWS.home = function () {
   <section class="hero">
     <p class="eyebrow">NEC licence exam · Civil (ACiE)</p>
     <h1>646 repeated MCQs, <span>ranked by recurrence</span></h1>
-    <div class="countdown">${d > 0 ? `<span class="big">${d} day${d === 1 ? '' : 's'}</span><span class="small muted">to the exam · Ashwin 26, 2083 · Mon 12 Oct 2026 · Pokhara centre</span>` : d === 0 ? '<span class="big">Exam day</span><span class="small muted">100 MCQs · 2 hours · pass mark 50 · no negative marking</span>' : '<span class="small muted">The exam date printed in the PDF (12 Oct 2026) has passed.</span>'}</div>
+    <p class="exam-scope">Prepare for any NEC Civil Engineering Licence Exam session. Practise at your own pace, review mistakes, and build confidence with timed mock tests.</p>
   </section>
   <div class="kpis">
     <div class="kpi"><b>${st.att}</b><span>of ${TOTAL} attempted</span></div>
