@@ -754,7 +754,7 @@ VIEWS.home = function () {
   const dueN = st.due, highN = BANK.filter(q => q.r >= 3).length;
   $app.innerHTML = `
   <section class="hero">
-    <p class="eyebrow">14th NEC licence exam · Civil (ACiE)</p>
+    <p class="eyebrow">NEC licence exam · Civil (ACiE)</p>
     <h1>646 repeated MCQs, <span>ranked by recurrence</span></h1>
     <div class="countdown">${d > 0 ? `<span class="big">${d} day${d === 1 ? '' : 's'}</span><span class="small muted">to the exam · Ashwin 26, 2083 · Mon 12 Oct 2026 · Pokhara centre</span>` : d === 0 ? '<span class="big">Exam day</span><span class="small muted">100 MCQs · 2 hours · pass mark 50 · no negative marking</span>' : '<span class="small muted">The exam date printed in the PDF (12 Oct 2026) has passed.</span>'}</div>
   </section>
